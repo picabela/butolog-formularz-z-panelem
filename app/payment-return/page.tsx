@@ -157,6 +157,8 @@ export default function PaymentReturn() {
   useEffect(() => {
     const processPaymentReturn = async () => {
       try {
+        if (typeof window === 'undefined') return
+        
         // Check payment status from URL parameters
         const paymentStatus = searchParams.get("status")
         const sessionId = searchParams.get("sessionId")
@@ -189,7 +191,9 @@ export default function PaymentReturn() {
   }, [searchParams])
 
   const goHome = () => {
-    window.location.href = "/"
+    if (typeof window !== 'undefined') {
+      window.location.href = "/"
+    }
   }
 
   if (status === "loading") {
@@ -213,7 +217,8 @@ export default function PaymentReturn() {
   }
 
   if (status === "success") {
-    const formData = JSON.parse(localStorage.getItem("repairFormData") || "{}")
+    const formDataStr = typeof window !== 'undefined' ? localStorage.getItem("repairFormData") : null
+    const formData = formDataStr ? JSON.parse(formDataStr) : {}
     
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">

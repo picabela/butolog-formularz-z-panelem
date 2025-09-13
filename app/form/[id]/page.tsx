@@ -84,12 +84,22 @@ export default function DynamicForm() {
 
   useEffect(() => {
     // Load form configuration from localStorage
-    const savedForms = localStorage.getItem("repairForms")
-    if (savedForms) {
-      const forms: FormConfig[] = JSON.parse(savedForms)
-      const form = forms.find(f => f.id === formId)
-      if (form && form.isActive) {
-        setFormConfig(form)
+    if (typeof window !== 'undefined') {
+      const savedForms = localStorage.getItem("repairForms")
+      if (savedForms) {
+        try {
+          const forms: FormConfig[] = JSON.parse(savedForms)
+          const form = forms.find(f => f.id === formId)
+          if (form && form.isActive) {
+            setFormConfig(form)
+          } else {
+            console.log('Form not found or inactive:', { formId, form })
+          }
+        } catch (error) {
+          console.error('Error parsing forms from localStorage:', error)
+        }
+      } else {
+        console.log('No forms found in localStorage')
       }
     }
   }, [formId])
@@ -171,9 +181,11 @@ export default function DynamicForm() {
     setIsProcessing(true)
     setError("")
 
-    // Store form data and config in localStorage for use after payment
-    localStorage.setItem("repairFormData", JSON.stringify(formData))
-    localStorage.setItem("currentFormConfig", JSON.stringify(formConfig))
+    if (typeof window !== 'undefined') {
+      // Store form data and config in localStorage for use after payment
+      localStorage.setItem("repairFormData", JSON.stringify(formData))
+      localStorage.setItem("currentFormConfig", JSON.stringify(formConfig))
+    }
 
     try {
       const paymentResult = await registerPayment()

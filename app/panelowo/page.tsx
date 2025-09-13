@@ -117,16 +117,28 @@ export default function AdminPanel() {
 
   // Load forms from localStorage on component mount
   useEffect(() => {
-    const savedForms = localStorage.getItem("repairForms")
-    if (savedForms) {
-      setForms(JSON.parse(savedForms))
+    if (typeof window !== 'undefined') {
+      const savedForms = localStorage.getItem("repairForms")
+      if (savedForms) {
+        try {
+          const parsedForms = JSON.parse(savedForms)
+          setForms(parsedForms)
+          console.log('Loaded forms from localStorage:', parsedForms)
+        } catch (error) {
+          console.error('Error parsing forms from localStorage:', error)
+          setForms([])
+        }
+      }
     }
   }, [])
 
   // Save forms to localStorage
   const saveForms = (newForms: FormConfig[]) => {
     setForms(newForms)
-    localStorage.setItem("repairForms", JSON.stringify(newForms))
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("repairForms", JSON.stringify(newForms))
+      console.log('Saved forms to localStorage:', newForms)
+    }
   }
 
   const generateId = () => {
@@ -193,14 +205,22 @@ export default function AdminPanel() {
   }
 
   const copyFormUrl = (id: string) => {
-    const url = `${window.location.origin}/form/${id}`
-    navigator.clipboard.writeText(url)
-    setMessage({ type: "success", text: "Link skopiowany do schowka!" })
-    setTimeout(() => setMessage(null), 3000)
+    if (typeof window !== 'undefined') {
+      const url = `${window.location.origin}/form/${id}`
+      navigator.clipboard.writeText(url).then(() => {
+        setMessage({ type: "success", text: "Link skopiowany do schowka!" })
+        setTimeout(() => setMessage(null), 3000)
+      }).catch(() => {
+        setMessage({ type: "error", text: "Błąd podczas kopiowania linku" })
+        setTimeout(() => setMessage(null), 3000)
+      })
+    }
   }
 
   const previewForm = (id: string) => {
-    window.open(`/form/${id}`, "_blank")
+    if (typeof window !== 'undefined') {
+      window.open(`/form/${id}`, "_blank")
+    }
   }
 
   const updateEditingForm = (path: string, value: any) => {
@@ -633,7 +653,7 @@ export default function AdminPanel() {
                       </div>
                       <div className="mt-2 text-xs text-muted-foreground">
                         <span className="font-mono bg-gray-100 px-2 py-1 rounded">
-                          {window.location.origin}/form/{form.id}
+                          {typeof window !== 'undefined' ? window.location.origin : 'https://your-domain.com'}/form/{form.id}
                         </span>
                       </div>
                     </div>

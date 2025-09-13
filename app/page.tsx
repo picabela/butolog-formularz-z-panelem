@@ -466,6 +466,9 @@ export default function RepairOrderForm() {
               <a href="#" className="text-sm text-muted-foreground hover:text-foreground">
                 Kontakt
               </a>
+              <a href="/panelowo" className="text-sm bg-amber-600 text-white px-3 py-1 rounded hover:bg-amber-700">
+                Panel zarządzania
+              </a>
             </nav>
           </div>
         </div>
