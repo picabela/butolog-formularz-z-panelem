@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useState, useEffect } from "react"
+import { useParams } from "next/navigation"
 import CryptoJS from 'crypto-js'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,13 +25,13 @@ interface FormConfig {
     posId: string
     crcKey: string
     apiKey: string
-    mode: 'sandbox' | 'production'
+    mode: "sandbox" | "production"
   }
   
   inpost: {
     apiToken: string
     organizationId: string
-    mode: 'sandbox' | 'production'
+    mode: "sandbox" | "production"
     recipientName: string
     recipientEmail: string
     recipientPhone: string
@@ -84,7 +84,7 @@ export default function DynamicForm() {
 
   useEffect(() => {
     // Load form configuration from localStorage
-    const savedForms = localStorage.getItem('repairForms')
+    const savedForms = localStorage.getItem("repairForms")
     if (savedForms) {
       const forms: FormConfig[] = JSON.parse(savedForms)
       const form = forms.find(f => f.id === formId)
@@ -103,7 +103,7 @@ export default function DynamicForm() {
   }
 
   const registerPayment = async () => {
-    if (!formConfig) throw new Error('Brak konfiguracji formularza')
+    if (!formConfig) throw new Error("Brak konfiguracji formularza")
     
     const sessionId = `ORDER_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const amount = formConfig.servicePrice * 100 // Convert to grosze (cents)
@@ -128,10 +128,10 @@ export default function DynamicForm() {
       formId: formConfig.id // Pass form ID for configuration
     }
 
-    const response = await fetch('/api/register-payment', {
-      method: 'POST',
+    const response = await fetch("/api/register-payment", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(paymentPayload),
     })
@@ -172,20 +172,20 @@ export default function DynamicForm() {
     setError("")
 
     // Store form data and config in localStorage for use after payment
-    localStorage.setItem('repairFormData', JSON.stringify(formData))
-    localStorage.setItem('currentFormConfig', JSON.stringify(formConfig))
+    localStorage.setItem("repairFormData", JSON.stringify(formData))
+    localStorage.setItem("currentFormConfig", JSON.stringify(formConfig))
 
     try {
       const paymentResult = await registerPayment()
       
       if (paymentResult.token) {
-        const baseUrl = formConfig.przelewy24.mode === 'sandbox' 
-          ? 'https://sandbox.przelewy24.pl' 
-          : 'https://secure.przelewy24.pl'
+        const baseUrl = formConfig.przelewy24.mode === "sandbox" 
+          ? "https://sandbox.przelewy24.pl" 
+          : "https://secure.przelewy24.pl"
         const paymentUrl = `${baseUrl}/trnRequest/${paymentResult.token}`
         window.location.href = paymentUrl
       } else {
-        throw new Error('Nie otrzymano tokenu płatności')
+        throw new Error("Nie otrzymano tokenu płatności")
       }
     } catch (error) {
       setError(error instanceof Error ? error.message : "Wystąpił błąd podczas inicjowania płatności")
@@ -280,7 +280,7 @@ export default function DynamicForm() {
             </div>
 
             <Button 
-              onClick={() => shipmentData && window.open(`/api/download-label/${shipmentData.id}`, '_blank')} 
+              onClick={() => shipmentData && window.open(`/api/download-label/${shipmentData.id}`, "_blank")} 
               className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700"
             >
               <Download className="w-4 h-4 mr-2" />
@@ -414,7 +414,7 @@ export default function DynamicForm() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">
-                        Telefon {formConfig.formSettings.requirePhone && '*'}
+                        Telefon {formConfig.formSettings.requirePhone && "*"}
                       </Label>
                       <Input
                         id="phone"

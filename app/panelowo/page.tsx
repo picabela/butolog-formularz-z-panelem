@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -41,14 +41,14 @@ interface FormConfig {
     posId: string
     crcKey: string
     apiKey: string
-    mode: 'sandbox' | 'production'
+    mode: "sandbox" | "production"
   }
   
   // InPost Config
   inpost: {
     apiToken: string
     organizationId: string
-    mode: 'sandbox' | 'production'
+    mode: "sandbox" | "production"
     recipientName: string
     recipientEmail: string
     recipientPhone: string
@@ -66,42 +66,42 @@ interface FormConfig {
     customFields: Array<{
       name: string
       label: string
-      type: 'text' | 'email' | 'tel' | 'textarea'
+      type: "text" | "email" | "tel" | "textarea"
       required: boolean
     }>
   }
 }
 
-const defaultFormConfig: Omit<FormConfig, 'id' | 'createdAt' | 'updatedAt'> = {
-  name: '',
-  serviceName: 'Naprawa obuwia',
-  serviceDescription: 'Profesjonalna naprawa wszystkich rodzajów obuwia',
+const defaultFormConfig: Omit<FormConfig, "id" | "createdAt" | "updatedAt"> = {
+  name: "",
+  serviceName: "Naprawa obuwia",
+  serviceDescription: "Profesjonalna naprawa wszystkich rodzajów obuwia",
   servicePrice: 99,
   isActive: true,
   
   przelewy24: {
-    merchantId: '2f3a3d13',
-    posId: '2f3a3d13',
-    crcKey: '44d745ef276a93e3',
-    apiKey: '404d485c25c140efee92436763a3f0e5',
-    mode: 'sandbox'
+    merchantId: "2f3a3d13",
+    posId: "2f3a3d13",
+    crcKey: "44d745ef276a93e3",
+    apiKey: "404d485c25c140efee92436763a3f0e5",
+    mode: "sandbox"
   },
   
   inpost: {
-    apiToken: 'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJkVzROZW9TeXk0OHpCOHg4emdZX2t5dFNiWHY3blZ0eFVGVFpzWV9TUFA4In0.eyJleHAiOjIwNTc5NTk5MTcsImlhdCI6MTc0MjU5OTkxNywianRpIjoiOGZjMWZiNmQtNTJkOS00ZDNkLTkxZWQtNTA1YTU3MGNmODA3IiwiaXNzIjoiaHR0cHM6Ly9zYW5kYm94LWxvZ2luLmlucG9zdC5wbC9hdXRoL3JlYWxtcy9leHRlcm5hbCIsInN1YiI6ImY6N2ZiZjQxYmEtYTEzZC00MGQzLTk1ZjYtOThhMmIxYmFlNjdiOjR2UlJaSDZHNW1LUWdTa2FQXy0yWFVKd19pT0hvTUIwMDF1aGE4SE5aVzAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJzaGlweCIsInNlc3Npb25fc3RhdGUiOiI0NzI1NjUwMi04NjIzLTQ2YmUtOTRmOC02NTA0YzZmNjk2MTMiLCJzY29wZSI6Im9wZW5pZCBhcGk6YXBpcG9pbnRzIGFwaTpzaGlweCIsInNpZCI6IjQ3MjU2NTAyLTg2MjMtNDZiZS05NGY4LTY1MDRjNmY2OTYxMyIsImFsbG93ZWRfcmVmZXJyZXJzIjoiIiwidXVpZCI6IjMxNzAwYmU3LTA2ZTAtNGVkZC05NTA1LTAzZjJhZjQ3M2QwMiIsImVtYWlsIjoia29udGFrdEBwaWNhYmVsYS5wbCJ9.gi0k1iTptAMC0iAILF9hfU5QsM3xClD59XcAs4Dax7FfGmoQTBlnsirBRO6bdVsAEaAN7eXB6kVzIc2om5bFocK8Xtk_z5ih9Piu-PmLKFp9FABmO1KUbq6ZprKBgZvHGEv01IIAgUvqKWfs_PldlCwwj9pBSjgp5IlGHiO0_xRX0kQiAd6RfIWLYuUi_zjTVltv1jS0eJ_eVmA2TOzxb2UF7mZrEpsIcoWbi_yba9g2GgJ46VxrRDI998TgBENPpMLFOECoG_-y60PF2nSU9Bl92qu0e6knxs_DxNYk_dScM0KKT842MorbniHGXcN-V8AfZzgvV1pxDLeqpb1IGA',
-    organizationId: '5134',
-    mode: 'sandbox',
-    recipientName: 'Serwis Napraw',
-    recipientEmail: 'kontakt@picabela.pl',
-    recipientPhone: '+48123456789',
-    targetPaczkomat: 'KRA010'
+    apiToken: "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJkVzROZW9TeXk0OHpCOHg4emdZX2t5dFNiWHY3blZ0eFVGVFpzWV9TUFA4In0.eyJleHAiOjIwNTc5NTk5MTcsImlhdCI6MTc0MjU5OTkxNywianRpIjoiOGZjMWZiNmQtNTJkOS00ZDNkLTkxZWQtNTA1YTU3MGNmODA3IiwiaXNzIjoiaHR0cHM6Ly9zYW5kYm94LWxvZ2luLmlucG9zdC5wbC9hdXRoL3JlYWxtcy9leHRlcm5hbCIsInN1YiI6ImY6N2ZiZjQxYmEtYTEzZC00MGQzLTk1ZjYtOThhMmIxYmFlNjdiOjR2UlJaSDZHNW1LUWdTa2FQXy0yWFVKd19pT0hvTUIwMDF1aGE4SE5aVzAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJzaGlweCIsInNlc3Npb25fc3RhdGUiOiI0NzI1NjUwMi04NjIzLTQ2YmUtOTRmOC02NTA0YzZmNjk2MTMiLCJzY29wZSI6Im9wZW5pZCBhcGk6YXBpcG9pbnRzIGFwaTpzaGlweCIsInNpZCI6IjQ3MjU2NTAyLTg2MjMtNDZiZS05NGY4LTY1MDRjNmY2OTYxMyIsImFsbG93ZWRfcmVmZXJyZXJzIjoiIiwidXVpZCI6IjMxNzAwYmU3LTA2ZTAtNGVkZC05NTA1LTAzZjJhZjQ3M2QwMiIsImVtYWlsIjoia29udGFrdEBwaWNhYmVsYS5wbCJ9.gi0k1iTptAMC0iAILF9hfU5QsM3xClD59XcAs4Dax7FfGmoQTBlnsirBRO6bdVsAEaAN7eXB6kVzIc2om5bFocK8Xtk_z5ih9Piu-PmLKFp9FABmO1KUbq6ZprKBgZvHGEv01IIAgUvqKWfs_PldlCwwj9pBSjgp5IlGHiO0_xRX0kQiAd6RfIWLYuUi_zjTVltv1jS0eJ_eVmA2TOzxb2UF7mZrEpsIcoWbi_yba9g2GgJ46VxrRDI998TgBENPpMLFOECoG_-y60PF2nSU9Bl92qu0e6knxs_DxNYk_dScM0KKT842MorbniHGXcN-V8AfZzgvV1pxDLeqpb1IGA",
+    organizationId: "5134",
+    mode: "sandbox",
+    recipientName: "Serwis Napraw",
+    recipientEmail: "kontakt@picabela.pl",
+    recipientPhone: "+48123456789",
+    targetPaczkomat: "KRA010"
   },
   
   formSettings: {
-    title: 'Zamów naprawę swojego obuwia',
-    subtitle: 'Profesjonalne usługi naprawcze z wygodną wysyłką przez Paczkomaty InPost',
-    buttonText: 'Opłać zamówienie',
-    successMessage: 'Zamówienie zostało zrealizowane pomyślnie!',
+    title: "Zamów naprawę swojego obuwia",
+    subtitle: "Profesjonalne usługi naprawcze z wygodną wysyłką przez Paczkomaty InPost",
+    buttonText: "Opłać zamówienie",
+    successMessage: "Zamówienie zostało zrealizowane pomyślnie!",
     requirePhone: true,
     requireDescription: false,
     customFields: []
@@ -112,12 +112,12 @@ export default function AdminPanel() {
   const [forms, setForms] = useState<FormConfig[]>([])
   const [editingForm, setEditingForm] = useState<FormConfig | null>(null)
   const [isCreating, setIsCreating] = useState(false)
-  const [activeTab, setActiveTab] = useState<'list' | 'edit'>('list')
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+  const [activeTab, setActiveTab] = useState<"list" | "edit">("list")
+  const [message, setMessage] = useState<{ type: "success" | "error", text: string } | null>(null)
 
   // Load forms from localStorage on component mount
   useEffect(() => {
-    const savedForms = localStorage.getItem('repairForms')
+    const savedForms = localStorage.getItem("repairForms")
     if (savedForms) {
       setForms(JSON.parse(savedForms))
     }
@@ -126,30 +126,30 @@ export default function AdminPanel() {
   // Save forms to localStorage
   const saveForms = (newForms: FormConfig[]) => {
     setForms(newForms)
-    localStorage.setItem('repairForms', JSON.stringify(newForms))
+    localStorage.setItem("repairForms", JSON.stringify(newForms))
   }
 
   const generateId = () => {
-    return 'form_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+    return "form_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9)
   }
 
   const createForm = () => {
     const newForm: FormConfig = {
       ...defaultFormConfig,
       id: generateId(),
-      name: 'Nowy formularz',
+      name: "Nowy formularz",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
     setEditingForm(newForm)
     setIsCreating(true)
-    setActiveTab('edit')
+    setActiveTab("edit")
   }
 
   const editForm = (form: FormConfig) => {
     setEditingForm({ ...form })
     setIsCreating(false)
-    setActiveTab('edit')
+    setActiveTab("edit")
   }
 
   const saveForm = () => {
@@ -168,8 +168,8 @@ export default function AdminPanel() {
     }
 
     saveForms(newForms)
-    setMessage({ type: 'success', text: 'Formularz został zapisany pomyślnie!' })
-    setActiveTab('list')
+    setMessage({ type: "success", text: "Formularz został zapisany pomyślnie!" })
+    setActiveTab("list")
     setEditingForm(null)
     setIsCreating(false)
 
@@ -177,10 +177,10 @@ export default function AdminPanel() {
   }
 
   const deleteForm = (id: string) => {
-    if (confirm('Czy na pewno chcesz usunąć ten formularz?')) {
+    if (confirm("Czy na pewno chcesz usunąć ten formularz?")) {
       const newForms = forms.filter(f => f.id !== id)
       saveForms(newForms)
-      setMessage({ type: 'success', text: 'Formularz został usunięty.' })
+      setMessage({ type: "success", text: "Formularz został usunięty." })
       setTimeout(() => setMessage(null), 3000)
     }
   }
@@ -195,18 +195,18 @@ export default function AdminPanel() {
   const copyFormUrl = (id: string) => {
     const url = `${window.location.origin}/form/${id}`
     navigator.clipboard.writeText(url)
-    setMessage({ type: 'success', text: 'Link skopiowany do schowka!' })
+    setMessage({ type: "success", text: "Link skopiowany do schowka!" })
     setTimeout(() => setMessage(null), 3000)
   }
 
   const previewForm = (id: string) => {
-    window.open(`/form/${id}`, '_blank')
+    window.open(`/form/${id}`, "_blank")
   }
 
   const updateEditingForm = (path: string, value: any) => {
     if (!editingForm) return
 
-    const keys = path.split('.')
+    const keys = path.split(".")
     const newForm = { ...editingForm }
     let current: any = newForm
 
@@ -218,21 +218,21 @@ export default function AdminPanel() {
     setEditingForm(newForm)
   }
 
-  if (activeTab === 'edit' && editingForm) {
+  if (activeTab === "edit" && editingForm) {
     return (
       <div className="min-h-screen bg-background p-6">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                {isCreating ? 'Tworzenie nowego formularza' : 'Edycja formularza'}
+                {isCreating ? "Tworzenie nowego formularza" : "Edycja formularza"}
               </h1>
               <p className="text-muted-foreground">
                 Skonfiguruj wszystkie parametry formularza wysyłkowego
               </p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setActiveTab('list')}>
+              <Button variant="outline" onClick={() => setActiveTab("list")}>
                 Anuluj
               </Button>
               <Button onClick={saveForm} className="bg-amber-600 hover:bg-amber-700">
@@ -244,12 +244,12 @@ export default function AdminPanel() {
 
           {message && (
             <div className={`mb-4 p-4 rounded-lg border ${
-              message.type === 'success' 
-                ? 'bg-green-50 border-green-200 text-green-800' 
-                : 'bg-red-50 border-red-200 text-red-800'
+              message.type === "success" 
+                ? "bg-green-50 border-green-200 text-green-800" 
+                : "bg-red-50 border-red-200 text-red-800"
             }`}>
               <div className="flex items-center gap-2">
-                {message.type === 'success' ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                {message.type === "success" ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
                 {message.text}
               </div>
             </div>
@@ -271,7 +271,7 @@ export default function AdminPanel() {
                     <Input
                       id="name"
                       value={editingForm.name}
-                      onChange={(e) => updateEditingForm('name', e.target.value)}
+                      onChange={(e) => updateEditingForm("name", e.target.value)}
                       placeholder="np. Naprawa obuwia - promocja"
                     />
                   </div>
@@ -280,7 +280,7 @@ export default function AdminPanel() {
                     <Input
                       id="serviceName"
                       value={editingForm.serviceName}
-                      onChange={(e) => updateEditingForm('serviceName', e.target.value)}
+                      onChange={(e) => updateEditingForm("serviceName", e.target.value)}
                       placeholder="np. Naprawa obuwia"
                     />
                   </div>
@@ -290,7 +290,7 @@ export default function AdminPanel() {
                   <Textarea
                     id="serviceDescription"
                     value={editingForm.serviceDescription}
-                    onChange={(e) => updateEditingForm('serviceDescription', e.target.value)}
+                    onChange={(e) => updateEditingForm("serviceDescription", e.target.value)}
                     placeholder="Szczegółowy opis usługi..."
                     rows={3}
                   />
@@ -304,7 +304,7 @@ export default function AdminPanel() {
                       step="0.01"
                       min="0"
                       value={editingForm.servicePrice}
-                      onChange={(e) => updateEditingForm('servicePrice', parseFloat(e.target.value) || 0)}
+                      onChange={(e) => updateEditingForm("servicePrice", parseFloat(e.target.value) || 0)}
                     />
                   </div>
                   <div className="flex items-center space-x-2 pt-6">
@@ -312,7 +312,7 @@ export default function AdminPanel() {
                       type="checkbox"
                       id="isActive"
                       checked={editingForm.isActive}
-                      onChange={(e) => updateEditingForm('isActive', e.target.checked)}
+                      onChange={(e) => updateEditingForm("isActive", e.target.checked)}
                       className="rounded"
                     />
                     <Label htmlFor="isActive">Formularz aktywny</Label>
@@ -334,7 +334,7 @@ export default function AdminPanel() {
                   <Label htmlFor="p24Mode">Tryb</Label>
                   <Select
                     value={editingForm.przelewy24.mode}
-                    onValueChange={(value: 'sandbox' | 'production') => updateEditingForm('przelewy24.mode', value)}
+                    onValueChange={(value: "sandbox" | "production") => updateEditingForm("przelewy24.mode", value)}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -361,7 +361,7 @@ export default function AdminPanel() {
                     <Input
                       id="merchantId"
                       value={editingForm.przelewy24.merchantId}
-                      onChange={(e) => updateEditingForm('przelewy24.merchantId', e.target.value)}
+                      onChange={(e) => updateEditingForm("przelewy24.merchantId", e.target.value)}
                     />
                   </div>
                   <div>
@@ -369,7 +369,7 @@ export default function AdminPanel() {
                     <Input
                       id="posId"
                       value={editingForm.przelewy24.posId}
-                      onChange={(e) => updateEditingForm('przelewy24.posId', e.target.value)}
+                      onChange={(e) => updateEditingForm("przelewy24.posId", e.target.value)}
                     />
                   </div>
                 </div>
@@ -380,7 +380,7 @@ export default function AdminPanel() {
                       id="crcKey"
                       type="password"
                       value={editingForm.przelewy24.crcKey}
-                      onChange={(e) => updateEditingForm('przelewy24.crcKey', e.target.value)}
+                      onChange={(e) => updateEditingForm("przelewy24.crcKey", e.target.value)}
                     />
                   </div>
                   <div>
@@ -389,7 +389,7 @@ export default function AdminPanel() {
                       id="apiKey"
                       type="password"
                       value={editingForm.przelewy24.apiKey}
-                      onChange={(e) => updateEditingForm('przelewy24.apiKey', e.target.value)}
+                      onChange={(e) => updateEditingForm("przelewy24.apiKey", e.target.value)}
                     />
                   </div>
                 </div>
@@ -409,7 +409,7 @@ export default function AdminPanel() {
                   <Label htmlFor="inpostMode">Tryb</Label>
                   <Select
                     value={editingForm.inpost.mode}
-                    onValueChange={(value: 'sandbox' | 'production') => updateEditingForm('inpost.mode', value)}
+                    onValueChange={(value: "sandbox" | "production") => updateEditingForm("inpost.mode", value)}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -436,7 +436,7 @@ export default function AdminPanel() {
                     <Textarea
                       id="inpostApiToken"
                       value={editingForm.inpost.apiToken}
-                      onChange={(e) => updateEditingForm('inpost.apiToken', e.target.value)}
+                      onChange={(e) => updateEditingForm("inpost.apiToken", e.target.value)}
                       rows={3}
                       className="font-mono text-xs"
                     />
@@ -446,7 +446,7 @@ export default function AdminPanel() {
                     <Input
                       id="organizationId"
                       value={editingForm.inpost.organizationId}
-                      onChange={(e) => updateEditingForm('inpost.organizationId', e.target.value)}
+                      onChange={(e) => updateEditingForm("inpost.organizationId", e.target.value)}
                     />
                   </div>
                 </div>
@@ -458,7 +458,7 @@ export default function AdminPanel() {
                     <Input
                       id="recipientName"
                       value={editingForm.inpost.recipientName}
-                      onChange={(e) => updateEditingForm('inpost.recipientName', e.target.value)}
+                      onChange={(e) => updateEditingForm("inpost.recipientName", e.target.value)}
                     />
                   </div>
                   <div>
@@ -467,7 +467,7 @@ export default function AdminPanel() {
                       id="recipientEmail"
                       type="email"
                       value={editingForm.inpost.recipientEmail}
-                      onChange={(e) => updateEditingForm('inpost.recipientEmail', e.target.value)}
+                      onChange={(e) => updateEditingForm("inpost.recipientEmail", e.target.value)}
                     />
                   </div>
                   <div>
@@ -475,7 +475,7 @@ export default function AdminPanel() {
                     <Input
                       id="recipientPhone"
                       value={editingForm.inpost.recipientPhone}
-                      onChange={(e) => updateEditingForm('inpost.recipientPhone', e.target.value)}
+                      onChange={(e) => updateEditingForm("inpost.recipientPhone", e.target.value)}
                     />
                   </div>
                 </div>
@@ -484,7 +484,7 @@ export default function AdminPanel() {
                   <Input
                     id="targetPaczkomat"
                     value={editingForm.inpost.targetPaczkomat}
-                    onChange={(e) => updateEditingForm('inpost.targetPaczkomat', e.target.value)}
+                    onChange={(e) => updateEditingForm("inpost.targetPaczkomat", e.target.value)}
                     placeholder="np. KRA010"
                   />
                 </div>
@@ -503,7 +503,7 @@ export default function AdminPanel() {
                     <Input
                       id="formTitle"
                       value={editingForm.formSettings.title}
-                      onChange={(e) => updateEditingForm('formSettings.title', e.target.value)}
+                      onChange={(e) => updateEditingForm("formSettings.title", e.target.value)}
                     />
                   </div>
                   <div>
@@ -511,7 +511,7 @@ export default function AdminPanel() {
                     <Input
                       id="buttonText"
                       value={editingForm.formSettings.buttonText}
-                      onChange={(e) => updateEditingForm('formSettings.buttonText', e.target.value)}
+                      onChange={(e) => updateEditingForm("formSettings.buttonText", e.target.value)}
                     />
                   </div>
                 </div>
@@ -520,7 +520,7 @@ export default function AdminPanel() {
                   <Textarea
                     id="formSubtitle"
                     value={editingForm.formSettings.subtitle}
-                    onChange={(e) => updateEditingForm('formSettings.subtitle', e.target.value)}
+                    onChange={(e) => updateEditingForm("formSettings.subtitle", e.target.value)}
                     rows={2}
                   />
                 </div>
@@ -529,7 +529,7 @@ export default function AdminPanel() {
                   <Input
                     id="successMessage"
                     value={editingForm.formSettings.successMessage}
-                    onChange={(e) => updateEditingForm('formSettings.successMessage', e.target.value)}
+                    onChange={(e) => updateEditingForm("formSettings.successMessage", e.target.value)}
                   />
                 </div>
                 <div className="flex gap-4">
@@ -538,7 +538,7 @@ export default function AdminPanel() {
                       type="checkbox"
                       id="requirePhone"
                       checked={editingForm.formSettings.requirePhone}
-                      onChange={(e) => updateEditingForm('formSettings.requirePhone', e.target.checked)}
+                      onChange={(e) => updateEditingForm("formSettings.requirePhone", e.target.checked)}
                       className="rounded"
                     />
                     <Label htmlFor="requirePhone">Wymagaj telefon</Label>
@@ -548,7 +548,7 @@ export default function AdminPanel() {
                       type="checkbox"
                       id="requireDescription"
                       checked={editingForm.formSettings.requireDescription}
-                      onChange={(e) => updateEditingForm('formSettings.requireDescription', e.target.checked)}
+                      onChange={(e) => updateEditingForm("formSettings.requireDescription", e.target.checked)}
                       className="rounded"
                     />
                     <Label htmlFor="requireDescription">Wymagaj opis problemu</Label>
@@ -580,12 +580,12 @@ export default function AdminPanel() {
 
         {message && (
           <div className={`mb-4 p-4 rounded-lg border ${
-            message.type === 'success' 
-              ? 'bg-green-50 border-green-200 text-green-800' 
-              : 'bg-red-50 border-red-200 text-red-800'
+            message.type === "success" 
+              ? "bg-green-50 border-green-200 text-green-800" 
+              : "bg-red-50 border-red-200 text-red-800"
           }`}>
             <div className="flex items-center gap-2">
-              {message.type === 'success' ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+              {message.type === "success" ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
               {message.text}
             </div>
           </div>
@@ -619,7 +619,7 @@ export default function AdminPanel() {
                             ? "bg-green-100 text-green-800 border-green-300" 
                             : "bg-gray-100 text-gray-600 border-gray-300"
                         }>
-                          {form.isActive ? 'Aktywny' : 'Nieaktywny'}
+                          {form.isActive ? "Aktywny" : "Nieaktywny"}
                         </Badge>
                         <Badge className="bg-amber-100 text-amber-800 border-amber-300">
                           {form.servicePrice} zł
@@ -628,8 +628,8 @@ export default function AdminPanel() {
                       <p className="text-muted-foreground mb-2">{form.serviceName}</p>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span>ID: {form.id}</span>
-                        <span>Utworzono: {new Date(form.createdAt).toLocaleDateString('pl-PL')}</span>
-                        <span>Zaktualizowano: {new Date(form.updatedAt).toLocaleDateString('pl-PL')}</span>
+                        <span>Utworzono: {new Date(form.createdAt).toLocaleDateString("pl-PL")}</span>
+                        <span>Zaktualizowano: {new Date(form.updatedAt).toLocaleDateString("pl-PL")}</span>
                       </div>
                       <div className="mt-2 text-xs text-muted-foreground">
                         <span className="font-mono bg-gray-100 px-2 py-1 rounded">
@@ -671,7 +671,7 @@ export default function AdminPanel() {
                           : "text-green-600 border-green-300 hover:bg-green-50"
                         }
                       >
-                        {form.isActive ? 'Dezaktywuj' : 'Aktywuj'}
+                        {form.isActive ? "Dezaktywuj" : "Aktywuj"}
                       </Button>
                       <Button
                         variant="outline"

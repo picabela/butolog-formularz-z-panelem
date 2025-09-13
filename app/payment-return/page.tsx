@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CheckCircle, AlertCircle, Package, Download, ExternalLink } from "lucide-react"
@@ -13,27 +13,27 @@ interface ShipmentData {
 
 export default function PaymentReturn() {
   const searchParams = useSearchParams()
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
+  const [status, setStatus] = useState<"loading" | "success" | "error">("loading")
   const [shipmentData, setShipmentData] = useState<ShipmentData | null>(null)
-  const [error, setError] = useState<string>('')
+  const [error, setError] = useState<string>("")
 
   const createShipment = async () => {
     // Get form data and config from localStorage (stored before payment)
-    const formDataStr = localStorage.getItem('repairFormData')
-    const configStr = localStorage.getItem('currentFormConfig')
+    const formDataStr = localStorage.getItem("repairFormData")
+    const configStr = localStorage.getItem("currentFormConfig")
     
     if (!formDataStr) {
-      throw new Error('Brak danych formularza')
+      throw new Error("Brak danych formularza")
     }
     
     if (!configStr) {
-      throw new Error('Brak konfiguracji formularza')
+      throw new Error("Brak konfiguracji formularza")
     }
     
     const formData = JSON.parse(formDataStr)
     const config = JSON.parse(configStr)
     
-    const API_BASE_URL = config.inpost.mode === 'production' 
+    const API_BASE_URL = config.inpost.mode === "production" 
       ? "https://api-shipx-pl.easypack24.net/v1"
       : "https://sandbox-api-shipx-pl.easypack24.net/v1"
     
@@ -80,11 +80,11 @@ export default function PaymentReturn() {
   }
 
   const getShipmentDetails = async (shipmentId: string) => {
-    const configStr = localStorage.getItem('currentFormConfig')
-    if (!configStr) throw new Error('Brak konfiguracji')
+    const configStr = localStorage.getItem("currentFormConfig")
+    if (!configStr) throw new Error("Brak konfiguracji")
     
     const config = JSON.parse(configStr)
-    const API_BASE_URL = config.inpost.mode === 'production' 
+    const API_BASE_URL = config.inpost.mode === "production" 
       ? "https://api-shipx-pl.easypack24.net/v1"
       : "https://sandbox-api-shipx-pl.easypack24.net/v1"
     
@@ -103,11 +103,11 @@ export default function PaymentReturn() {
 
   const downloadLabel = async (shipmentId: string) => {
     try {
-      const configStr = localStorage.getItem('currentFormConfig')
-      if (!configStr) throw new Error('Brak konfiguracji')
+      const configStr = localStorage.getItem("currentFormConfig")
+      if (!configStr) throw new Error("Brak konfiguracji")
       
       const config = JSON.parse(configStr)
-      const API_BASE_URL = config.inpost.mode === 'production' 
+      const API_BASE_URL = config.inpost.mode === "production" 
         ? "https://api-shipx-pl.easypack24.net/v1"
         : "https://sandbox-api-shipx-pl.easypack24.net/v1"
       
@@ -158,30 +158,30 @@ export default function PaymentReturn() {
     const processPaymentReturn = async () => {
       try {
         // Check payment status from URL parameters
-        const paymentStatus = searchParams.get('status')
-        const sessionId = searchParams.get('sessionId')
+        const paymentStatus = searchParams.get("status")
+        const sessionId = searchParams.get("sessionId")
         
-        if (paymentStatus === 'success' || sessionId) {
+        if (paymentStatus === "success" || sessionId) {
           // Payment successful, create shipment
           const shipment = await createShipment()
           setShipmentData(shipment)
-          setStatus('success')
+          setStatus("success")
           
           // Start polling for tracking number
           pollForTrackingNumber(shipment.id)
           
           // Clear form data from localStorage
-          localStorage.removeItem('repairFormData')
-          localStorage.removeItem('currentFormConfig')
+          localStorage.removeItem("repairFormData")
+          localStorage.removeItem("currentFormConfig")
         } else {
           // Payment failed or cancelled
-          setError('Płatność została anulowana lub wystąpił błąd')
-          setStatus('error')
+          setError("Płatność została anulowana lub wystąpił błąd")
+          setStatus("error")
         }
       } catch (error) {
-        console.error('Error processing payment return:', error)
-        setError(error instanceof Error ? error.message : 'Wystąpił błąd podczas przetwarzania')
-        setStatus('error')
+        console.error("Error processing payment return:", error)
+        setError(error instanceof Error ? error.message : "Wystąpił błąd podczas przetwarzania")
+        setStatus("error")
       }
     }
 
@@ -189,10 +189,10 @@ export default function PaymentReturn() {
   }, [searchParams])
 
   const goHome = () => {
-    window.location.href = '/'
+    window.location.href = "/"
   }
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
@@ -212,8 +212,8 @@ export default function PaymentReturn() {
     )
   }
 
-  if (status === 'success') {
-    const formData = JSON.parse(localStorage.getItem('repairFormData') || '{}')
+  if (status === "success") {
+    const formData = JSON.parse(localStorage.getItem("repairFormData") || "{}")
     
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -279,7 +279,7 @@ export default function PaymentReturn() {
     )
   }
 
-  if (status === 'error') {
+  if (status === "error") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
