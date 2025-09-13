@@ -115,6 +115,24 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState<"list" | "edit">("list")
   const [message, setMessage] = useState<{ type: "success" | "error", text: string } | null>(null)
 
+  // Check authentication
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isLoggedIn = localStorage.getItem("isLoggedIn")
+      if (!isLoggedIn) {
+        window.location.href = "/"
+        return
+      }
+    }
+  }, [])
+
+  const logout = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem("isLoggedIn")
+      window.location.href = "/"
+    }
+  }
+
   // Load forms from localStorage on component mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -142,13 +160,13 @@ export default function AdminPanel() {
   }
 
   const generateId = () => {
-    return "form_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9)
+    return "form_" + Date.now()
   }
 
   const createForm = () => {
     const newForm: FormConfig = {
       ...defaultFormConfig,
-      id: generateId(),
+      id: "", // Will be set by user
       name: "Nowy formularz",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -166,6 +184,27 @@ export default function AdminPanel() {
 
   const saveForm = () => {
     if (!editingForm) return
+
+    // Validate required fields
+    if (!editingForm.id.trim()) {
+      setMessage({ type: "error", text: "ID formularza jest wymagane!" })
+      setTimeout(() => setMessage(null), 3000)
+      return
+    }
+
+    if (!editingForm.name.trim()) {
+      setMessage({ type: "error", text: "Nazwa formularza jest wymagana!" })
+      setTimeout(() => setMessage(null), 3000)
+      return
+    }
+
+    // Check if ID already exists (only for new forms or when ID changed)
+    const existingForm = forms.find(f => f.id === editingForm.id && f.id !== (isCreating ? "" : editingForm.id))
+    if (existingForm) {
+      setMessage({ type: "error", text: "Formularz o tym ID już istnieje!" })
+      setTimeout(() => setMessage(null), 3000)
+      return
+    }
 
     const updatedForm = {
       ...editingForm,
@@ -206,7 +245,7 @@ export default function AdminPanel() {
 
   const copyFormUrl = (id: string) => {
     if (typeof window !== 'undefined') {
-      const url = `${window.location.origin}/form/${id}`
+      const url = `${window.location.origin}/${id}`
       navigator.clipboard.writeText(url).then(() => {
         setMessage({ type: "success", text: "Link skopiowany do schowka!" })
         setTimeout(() => setMessage(null), 3000)
@@ -219,7 +258,7 @@ export default function AdminPanel() {
 
   const previewForm = (id: string) => {
     if (typeof window !== 'undefined') {
-      window.open(`/form/${id}`, "_blank")
+      window.open(`/${id}`, "_blank")
     }
   }
 
@@ -285,6 +324,20 @@ export default function AdminPanel() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="formId">ID formularza *</Label>
+                  <Input
+                    id="formId"
+                    value={editingForm.id}
+                    onChange={(e) => updateEditingForm("id", e.target.value.replace(/[^a-zA-Z0-9-_]/g, ''))}
+                    placeholder="np. naprawa-obuwia-2024"
+                    required
+                    className="font-mono"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Tylko litery, cyfry, myślniki i podkreślenia. Link: {typeof window !== 'undefined' ? window.location.origin : 'https://your-domain.com'}/{editingForm.id || 'ID'}
+                  </p>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="name">Nazwa formularza</Label>
@@ -576,6 +629,9 @@ export default function AdminPanel() {
                 </div>
               </CardContent>
             </Card>
+            <Button onClick={logout} variant="outline" className="text-red-600 border-red-300 hover:bg-red-50">
+              Wyloguj
+            </Button>
           </div>
         </div>
       </div>
@@ -653,7 +709,7 @@ export default function AdminPanel() {
                       </div>
                       <div className="mt-2 text-xs text-muted-foreground">
                         <span className="font-mono bg-gray-100 px-2 py-1 rounded">
-                          {typeof window !== 'undefined' ? window.location.origin : 'https://your-domain.com'}/form/{form.id}
+                          {typeof window !== 'undefined' ? window.location.origin : 'https://your-domain.com'}/{form.id}
                         </span>
                       </div>
                     </div>

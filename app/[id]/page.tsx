@@ -92,8 +92,9 @@ export default function DynamicForm() {
           const form = forms.find(f => f.id === formId)
           if (form && form.isActive) {
             setFormConfig(form)
+            console.log('Form loaded successfully:', form)
           } else {
-            console.log('Form not found or inactive:', { formId, form })
+            console.log('Form not found or inactive:', { formId, form, allForms: forms })
           }
         } catch (error) {
           console.error('Error parsing forms from localStorage:', error)
@@ -215,7 +216,7 @@ export default function DynamicForm() {
             </div>
             <CardTitle className="text-red-600">Formularz niedostępny</CardTitle>
             <CardDescription>
-              Formularz o podanym ID nie istnieje lub został dezaktywowany.
+              Formularz o ID "{formId}" nie istnieje lub został dezaktywowany.
             </CardDescription>
           </CardHeader>
         </Card>
