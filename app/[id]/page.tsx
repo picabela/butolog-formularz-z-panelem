@@ -89,8 +89,6 @@ export default function DynamicForm() {
       if (savedForms) {
         try {
           const forms: FormConfig[] = JSON.parse(savedForms)
-          console.log('All forms from localStorage:', forms);
-          console.log('Searching for form with ID:', formId);
           const form = forms.find(f => f.id === formId)
           if (form && form.isActive) {
             setFormConfig(form)
